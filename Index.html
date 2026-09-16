@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myanmar - English Communication Assistant</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans Myanmar -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Myanmar:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans Myanmar', 'sans-serif'],
+                        myanmar: ['Noto Sans Myanmar', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-200 flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 glass border-b border-slate-200/50 dark:border-slate-800/50 px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 font-bold text-lg font-myanmar">
+                    မြ
+                </div>
+                <div>
+                    <h1 id="appHeaderTitle" class="text-base sm:text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                        Myanmar - English Communication Assistant
+                    </h1>
+                    <p id="appHeaderSubtitle" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Stylized Contextual Translator & Pragmatic Assistant</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- App Interface Language Toggle Switch (UI Language: English vs Myanmar) -->
+                <button id="uiLangToggleBtn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition">
+                    <i class="fa-solid fa-globe text-indigo-500"></i>
+                    <span id="uiLangLabel" class="font-myanmar">UI: English</span>
+                </button>
+
+                <!-- Translation Direction Switch Button -->
+                <button id="directionToggleBtn" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 transition transform active:scale-95">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span id="directionLabel">English ➔ Myanmar</span>
+                </button>
+
+                <!-- Theme Switcher -->
+                <button id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-200/60 dark:bg-slate-800/60 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 transition text-slate-600 dark:text-slate-300" title="Toggle theme">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+                
+                <!-- API Key Config Button -->
+                <button id="apiKeyModalBtn" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition">
+                    <i class="fa-solid fa-key"></i>
+                    <span id="apiKeyBtnText" class="hidden sm:inline">API Key</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+
+        <!-- Persona & Style Selection Grid -->
+        <section class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder text-indigo-500"></i>
+                    <span id="personaSectionTitle">Select Speaker Persona & Nuance Style</span>
+                </label>
+                <span id="selectedStyleBadge" class="text-xs px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-medium font-myanmar">
+                    Male Speaker: Formal / Respectful
+                </span>
+            </div>
+
+            <!-- Dynamic Persona Buttons Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" id="personaPresetContainer">
+                <!-- Buttons injected dynamically -->
+            </div>
+
+            <!-- Custom Persona Input Box -->
+            <div id="customPersonaBox" class="hidden mt-3 p-3 rounded-xl glass border border-indigo-200 dark:border-indigo-900/50 space-y-2">
+                <label id="customPersonaLabel" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen-nib"></i> Define Custom Social Role & Honorific Instructions:
+                </label>
+                <input type="text" id="customPersonaInput" placeholder="e.g. A Buddhist monk speaking to laypersons using respectful terms (တပည့်တော်, ဒါယကာ)..." class="w-full text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-slate-100 font-myanmar" />
+            </div>
+        </section>
+
+        <!-- Main Dual-Pane Translator Workspace -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+
+            <!-- INPUT PANEL -->
+            <div class="glass rounded-2xl p-4 md:p-5 flex flex-col shadow-sm border border-slate-200/80 dark:border-slate-800">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200/60 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <h2 id="sourcePanelTitle" class="text-sm font-bold text-slate-700 dark:text-slate-200">English Source Text</h2>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button id="clearInputBtn" class="p-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition" title="Clear text">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sample Presets Container -->
+                <div class="py-3 flex items-center gap-2 overflow-x-auto" id="samplePresetsContainer">
+                    <!-- Samples dynamically injected -->
+                </div>
+
+                <!-- Textarea -->
+                <div class="flex-1 relative min-h-[200px]">
+                    <textarea id="sourceInput" placeholder="Enter English text here..." class="w-full h-full p-3 text-base sm:text-lg bg-transparent border-0 focus:outline-none resize-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 leading-relaxed font-sans"></textarea>
+                </div>
+
+                <!-- Bottom Input Action Bar -->
+                <div class="pt-3 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                    <span id="charCount" class="text-xs text-slate-400 font-mono">0 chars</span>
+                    <button id="translateBtn" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 flex items-center space-x-2 transition transform active:scale-95">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span id="translateBtnText">Translate & Stylize</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OUTPUT PANEL -->
+            <div class="glass rounded-2xl p-4 md:p-5 flex flex-col shadow-sm border border-slate-200/80 dark:border-slate-800">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200/60 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                        <h2 id="targetPanelTitle" class="text-sm font-bold text-slate-700 dark:text-slate-200">Stylized Myanmar Output</h2>
+                    </div>
+                    <div class="flex items-center space-x-1" id="outputActions">
+                        <!-- Copy Button -->
+                        <button id="copyBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Copy Translation">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                        <!-- TTS Button -->
+                        <button id="ttsBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Read Aloud with Gemini Voice">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Output Render Area -->
+                <div class="flex-1 py-4 relative flex flex-col justify-between overflow-y-auto min-h-[220px]">
+                    <!-- Placeholder State -->
+                    <div id="outputPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 p-6 text-center">
+                        <i class="fa-solid fa-language text-3xl mb-3 opacity-50"></i>
+                        <p id="placeholderText" class="text-sm">Select a tone persona, enter text, and click translate.</p>
+                    </div>
+
+                    <!-- Loading Spinner State -->
+                    <div id="loadingState" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm z-10">
+                        <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-3"></div>
+                        <p id="loadingStatusText" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 animate-pulse">Adapting social hierarchy, particles & honorifics...</p>
+                    </div>
+
+                    <!-- Output Content -->
+                    <div id="outputContainer" class="hidden space-y-4">
+                        <!-- Primary Translation Box -->
+                        <div class="bg-indigo-50/60 dark:bg-indigo-950/40 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/40 space-y-2">
+                            <div id="translationOutput" class="text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-medium leading-relaxed font-myanmar">
+                                <!-- Injected Translation -->
+                            </div>
+                            <!-- Romanization / Pronunciation Guide -->
+                            <div id="romanizationBox" class="text-xs font-mono text-indigo-600 dark:text-indigo-300 pt-1 border-t border-indigo-100/60 dark:border-indigo-900/30 flex items-center gap-1.5">
+                                <i class="fa-solid fa-feather text-indigo-400"></i>
+                                <span id="romanizationText"></span>
+                            </div>
+                        </div>
+
+                        <!-- Linguistic Breakdown & Honorific Notes -->
+                        <div id="toneNotesBox" class="p-3.5 bg-slate-100/70 dark:bg-slate-900/60 rounded-xl border border-slate-200/60 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-2">
+                            <div id="toneBreakdownTitle" class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-info text-indigo-500"></i> Particle & Honorific Breakdown:
+                            </div>
+                            <p id="toneNotesText" class="leading-relaxed"></p>
+
+                            <!-- Cultural Etiquette & Context Advice -->
+                            <div id="culturalNotesBox" class="pt-2 border-t border-slate-200/60 dark:border-slate-800/80">
+                                <span id="culturalNoteTitle" class="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1 mb-0.5">
+                                    <i class="fa-solid fa-lightbulb"></i> Cultural Etiquette Note:
+                                </span>
+                                <p id="culturalNotesText" class="text-slate-500 dark:text-slate-400 italic leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TTS Audio Player Bar -->
+                <div id="ttsPlayerBar" class="hidden pt-3 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between bg-slate-100/40 dark:bg-slate-900/40 px-3 py-2 rounded-xl">
+                    <div class="flex items-center space-x-2 text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                        <i class="fa-solid fa-waveform animate-pulse"></i>
+                        <span id="ttsStatus">Playing Audio...</span>
+                    </div>
+                    <button id="stopTtsBtn" class="text-xs text-rose-500 hover:text-rose-600 font-semibold px-2 py-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/50 transition">
+                        Stop
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- API Key Settings Modal -->
+    <div id="apiKeyModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="modalTitle" class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-key text-indigo-500"></i> API Key Settings
+                </h3>
+                <button id="closeApiKeyModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p id="modalDesc" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                By default, this app uses the embedded Gemini API key. If you wish to use your personal Google Gemini API key, enter it below.
+            </p>
+            <div>
+                <label id="modalKeyLabel" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Custom Gemini API Key</label>
+                <input type="password" id="customApiKeyInput" placeholder="AIzaSy..." class="w-full text-sm bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-800 dark:text-slate-100 font-mono" />
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button id="clearApiKeyBtn" class="px-4 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl font-medium transition">Remove Key</button>
+                <button id="saveApiKeyBtn" class="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-md">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <script>
+        // Direction Modes: 'EN_TO_MM' (Primary Focus) and 'MM_TO_EN'
+        let currentDirection = 'EN_TO_MM';
+        // UI Interface Language: 'en' or 'mm'
+        let uiLanguage = 'en';
+
+        // UI Localization Dictionary
+        const I18N = {
+            en: {
+                appName: "Myanmar - English Communication Assistant",
+                appSubtitle: "Stylized Contextual Translator & Pragmatic Assistant",
+                uiToggleBtn: "UI: English",
+                directionEnMm: "English ➔ Myanmar",
+                directionMmEn: "Myanmar ➔ English",
+                personaSectionTitle: "Select Speaker Persona & Nuance Style",
+                customPersonaLabel: "Define Custom Social Role & Honorific Instructions:",
+                customPersonaPlaceholder: "e.g. A Buddhist monk speaking to laypersons using respectful terms (တပည့်တော်, ဒါယကာ)...",
+                sourceTitleEn: "English Source Text",
+                sourceTitleMm: "Myanmar Source Text",
+                targetTitleMm: "Stylized Myanmar Output",
+                targetTitleEn: "Stylized English Output",
+                inputPlaceholderEn: "Enter English text here...",
+                inputPlaceholderMm: "ဤနေရာတွင် မြန်မာစာ ရိုက်ထည့်ပါ...",
+                translateBtn: "Translate & Stylize",
+                placeholderText: "Select a tone persona, enter text, and click translate.",
+                loadingStatus: "Adapting social hierarchy, particles & honorifics...",
+                toneBreakdownTitle: "Particle & Honorific Breakdown:",
+                culturalNoteTitle: "Cultural Etiquette Note:",
+                samplesLabel: "Samples:",
+                apiKeyBtn: "API Key",
+                modalTitle: "API Key Settings",
+                modalDesc: "By default, this app uses the embedded Gemini API key. If you wish to use your personal Google Gemini API key, enter it below.",
+                modalKeyLabel: "Custom Gemini API Key",
+                clearKeyBtn: "Remove Key",
+                saveKeyBtn: "Save Settings",
+                samplePresentation: "🏛️ Formal Presentation",
+                sampleBrother: "💪 Encouraging Brother",
+                sampleFriend: "💬 Close Friend Casual",
+                sampleCustomer: "🎧 Customer Care",
+                sampleSister: "❤️ Encouraging Sister"
+            },
+            mm: {
+                appName: "မြန်မာ - အင်္ဂလိပ် ဆက်သွယ်ရေး ကူညီမှုစနစ်",
+                appSubtitle: "လူမှုအသုံးအနှုန်းနှင့် ပုံစံအလိုက် ဘာသာပြန်စနစ်",
+                uiToggleBtn: "UI: မြန်မာ",
+                directionEnMm: "အင်္ဂလိပ် ➔ မြန်မာ",
+                directionMmEn: "မြန်မာ ➔ အင်္ဂလိပ်",
+                personaSectionTitle: "ပြောဆိုသူ ပုံစံနှင့် အသုံးအနှုန်းအလွှာ ရွေးချယ်ပါ",
+                customPersonaLabel: "စိတ်ကြိုက် လူမှုအဆင့်အတန်းနှင့် အသုံးအနှုန်းသတ်မှတ်ပါ:",
+                customPersonaPlaceholder: "ဥပမာ - ရဟန်းတော်မှ ဒါယကာများသို့ မိန့်ကြားသည့် ပုံစံ (တပည့်တော်၊ ဒါယကာ)...",
+                sourceTitleEn: "အင်္ဂလိပ် မူရင်းစာသား",
+                sourceTitleMm: "မြန်မာ မူရင်းစာသား",
+                targetTitleMm: "ပုံစံညှိထားသော မြန်မာဘာသာပြန်",
+                targetTitleEn: "ပုံစံညှိထားသော အင်္ဂလိပ်ဘာသာပြန်",
+                inputPlaceholderEn: "အင်္ဂလိပ်စာသား ဤနေရာတွင် ရိုက်ထည့်ပါ...",
+                inputPlaceholderMm: "မြန်မာစာသား ဤနေရာတွင် ရိုက်ထည့်ပါ...",
+                translateBtn: "ဘာသာပြန်ပြီး ပုံစံညှိမည်",
+                placeholderText: "ပြောဆိုသူပုံစံ ရွေးချယ်၍ စာသားရိုက်ထည့်ကာ ဘာသာပြန်ရန် နှိပ်ပါ။",
+                loadingStatus: "လူမှုအဆင့်အတန်း၊ စာကြွင်းစကားလုံးနှင့် အသုံးအနှုန်းများ ညှိယူနေသည်...",
+                toneBreakdownTitle: "စကားလုံးနှင့် စာကြွင်းအသုံးအနှုန်း ခွဲခြမ်းစိတ်ဖြာချက်:",
+                culturalNoteTitle: "ယဉ်ကျေးမှုဆိုင်ရာ သတိပြုဖွယ်ရာ အကြံပြုချက်:",
+                samplesLabel: "နမူနာများ:",
+                apiKeyBtn: "API သော့ချက်",
+                modalTitle: "API Key ပြင်ဆင်ချက်များ",
+                modalDesc: "မူလအတိုင်း စနစ်ပါ Gemini API Key ကို အသုံးပြုထားပါသည်။ မိမိကိုယ်ပိုင် API Key သုံးစွဲလိုပါက အောက်တွင် ထည့်သွင်းပါ။",
+                modalKeyLabel: "မိမိကိုယ်ပိုင် Gemini API Key",
+                clearKeyBtn: "ဖျက်မည်",
+                saveKeyBtn: "သိမ်းဆည်းမည်",
+                samplePresentation: "🏛️ တရားဝင် ဟောပြောချက်",
+                sampleBrother: "💪 အစ်ကို့တွန်းအားပေးစကား",
+                sampleFriend: "💬 ရင်းနှီးသူ သူငယ်ချင်း",
+                sampleCustomer: "🎧 ဝန်ဆောင်မှု ပံ့ပိုးရေး",
+                sampleSister: "❤️ အစ်မ၏ တိုက်တွန်းစကား"
+            }
+        };
+
+        // English -> Myanmar Personas (Exact 10 Requested Styles + Custom)
+        const PERSONAS_EN_TO_MM = [
+            {
+                id: 'male_formal_presentation',
+                titleEn: 'Male Speaker',
+                subtitleEn: 'Formal respectful presentation',
+                titleMm: 'အမျိုးသား ပြောဆိုသူ',
+                subtitleMm: 'တရားဝင် လေးစားဖွယ် ဟောပြောချက်',
+                icon: 'fa-user-tie',
+                color: 'from-blue-600 to-indigo-700',
+                voice: 'Kore',
+                prompt: 'Translate into formal, highly respectful presentation Myanmar as a male speaker. Use polite ending particles like "ပါခင်ဗျာ" or "ပါဗျာ", male self-referential pronouns (ကျွန်တော်), and elegant, official vocabulary.'
+            },
+            {
+                id: 'male_older_brother',
+                titleEn: 'Male Speaker',
+                subtitleEn: 'Older Brother / Encouraging Mentor',
+                titleMm: 'အမျိုးသား ပြောဆိုသူ',
+                subtitleMm: 'အစ်ကို / တွန်းအားပေးသူ လမ်းပြ',
+                icon: 'fa-handshake-angle',
+                color: 'from-amber-500 to-orange-600',
+                voice: 'Puck',
+                prompt: 'Translate into warm, brotherly, encouraging Myanmar as a male mentor or older brother (အစ်ကို / ကိုကို). Use encouraging terms like "ညီလေး/ညီမလေး", supportive particles like "နော်", "ပါနော်", and an inspiring tone.'
+            },
+            {
+                id: 'male_close_friend',
+                titleEn: 'Male Speaker',
+                subtitleEn: 'Close friend informal',
+                titleMm: 'အမျိုးသား ပြောဆိုသူ',
+                subtitleMm: 'ရင်းနှီးသော သူငယ်ချင်းအချင်းချင်း',
+                icon: 'fa-comments',
+                color: 'from-rose-500 to-pink-600',
+                voice: 'Fenrir',
+                prompt: 'Translate into relaxed, informal spoken Myanmar between close male friends. Use informal speech particles like "ကွာ", "လေ", "ဟေ့ကောင်", and natural conversational phrasing.'
+            },
+            {
+                id: 'female_formal_presentation',
+                titleEn: 'Female Speaker',
+                subtitleEn: 'Formal respectful presentation',
+                titleMm: 'အမျိုးသမီး ပြောဆိုသူ',
+                subtitleMm: 'တရားဝင် လေးစားဖွယ် ဟောပြောချက်',
+                icon: 'fa-user-graduate',
+                color: 'from-purple-600 to-indigo-600',
+                voice: 'Zephyr',
+                prompt: 'Translate into formal, highly respectful presentation Myanmar as a female speaker. Use polite female ending particles like "ပါရှင့်" or "ရှင့်", female pronouns (ကျွန်မ), and graceful official phrasing.'
+            },
+            {
+                id: 'female_older_sister',
+                titleEn: 'Female Speaker',
+                subtitleEn: 'Older Sister / Encouraging Mentor',
+                titleMm: 'အမျိုးသမီး ပြောဆိုသူ',
+                subtitleMm: 'အစ်မ / တွန်းအားပေးသူ လမ်းပြ',
+                icon: 'fa-heart',
+                color: 'from-pink-500 to-rose-500',
+                voice: 'Leda',
+                prompt: 'Translate into warm, sisterly, encouraging Myanmar as an older sister (မမ / အစ်မ). Use supportive sisterly phrasing, caring pronouns, and nurturing sentence endings.'
+            },
+            {
+                id: 'female_close_friend',
+                titleEn: 'Female Speaker',
+                subtitleEn: 'Close friend informal',
+                titleMm: 'အမျိုးသမီး ပြောဆိုသူ',
+                subtitleMm: 'ရင်းနှီးသော သူငယ်ချင်းအချင်းချင်း',
+                icon: 'fa-face-smile-wink',
+                color: 'from-fuchsia-500 to-purple-600',
+                voice: 'Aoede',
+                prompt: 'Translate into casual, friendly spoken Myanmar as a female speaking to close peers. Use natural female informal speech particles like "နော်", "ဟာ", "အေ", and warm tone.'
+            },
+            {
+                id: 'polite_customer_care',
+                titleEn: 'Polite Professional',
+                subtitleEn: 'Customer Care',
+                titleMm: 'ယဉ်ကျေးသော ဝန်ဆောင်မှု',
+                subtitleMm: 'သုံးစွဲသူ ပံ့ပိုးကူညီရေး အသုံးအနှုန်း',
+                icon: 'fa-headset',
+                color: 'from-emerald-500 to-teal-600',
+                voice: 'Zephyr',
+                prompt: 'Translate into ultra-polite, service-oriented Myanmar for customer support. Use highly courteous honorifics ("လူကြီးမင်း", "ပါရှင့် / ပါခင်ဗျာ"), humble phrasing, and polished service terms.'
+            },
+            {
+                id: 'formal_written_literary',
+                titleEn: 'Formal Written',
+                subtitleEn: 'Literary style (စာတွေ့)',
+                titleMm: 'တရားဝင် ရေးသားမှု',
+                subtitleMm: 'စာတွေ့ အသုံးအနှုန်း ပုံစံ',
+                icon: 'fa-book-bookmark',
+                color: 'from-slate-700 to-slate-900',
+                voice: 'Charon',
+                prompt: 'Translate strictly into formal literary Myanmar register (စာတွေ့). Apply standard literary grammar markers such as "သည်", "သည့်", "၍", "ဖြင့်", "မည်", "၏" suitable for official documents or news.'
+            },
+            {
+                id: 'informal_written_literary',
+                titleEn: 'Informal Written',
+                subtitleEn: 'Literary style (spoken Myanmar)',
+                titleMm: 'လွတ်လပ်သော ရေးသားမှု',
+                subtitleMm: 'စကားပြော ရေးဟန် ပုံစံ',
+                icon: 'fa-pen-to-square',
+                color: 'from-cyan-600 to-blue-600',
+                voice: 'Aoede',
+                prompt: 'Translate into modern informal written Myanmar (spoken written register). Use standard spoken grammar markers such as "တယ်", "တဲ့", "နဲ့", "မယ်" for blogs or social media posts.'
+            },
+            {
+                id: 'encouraging_simple_writing',
+                titleEn: 'Encouraging Style',
+                subtitleEn: 'Easy to understand writing',
+                titleMm: 'တွန်းအားပေး အသုံးအနှုန်း',
+                subtitleMm: 'ရှင်းလင်းလွယ်ကူသော ရေးဟန်',
+                icon: 'fa-lightbulb',
+                color: 'from-amber-600 to-yellow-500',
+                voice: 'Puck',
+                prompt: 'Translate into very clear, simple, and uplifting Myanmar writing. Use easy-to-understand vocabulary accessible to all reading levels without complex idioms.'
+            },
+            {
+                id: 'custom',
+                titleEn: 'Custom Style',
+                subtitleEn: 'User defined social role',
+                titleMm: 'စိတ်ကြိုက် ပုံစံ',
+                subtitleMm: 'မိမိဘာသာ သတ်မှတ်ထားသော အသုံးအနှုန်း',
+                icon: 'fa-sliders',
+                color: 'from-indigo-600 to-slate-800',
+                voice: 'Zephyr',
+                prompt: 'Custom'
+            }
+        ];
+
+        // Myanmar -> English Personas
+        const PERSONAS_MM_TO_EN = [
+            {
+                id: 'male_formal_en',
+                titleEn: 'Male Speaker',
+                subtitleEn: 'Formal Business / Presentation',
+                titleMm: 'အမျိုးသား ပြောဆိုသူ',
+                subtitleMm: 'တရားဝင် လုပ်ငန်းခွင် အသုံးအနှုန်း',
+                icon: 'fa-briefcase',
+                color: 'from-blue-500 to-indigo-600',
+                voice: 'Kore',
+                prompt: 'Translate the Myanmar text into professional, authoritative, formal English as spoken by a male corporate executive or presenter.'
+            },
+            {
+                id: 'male_informal_en',
+                titleEn: 'Male Speaker',
+                subtitleEn: 'Informal & Encouraging',
+                titleMm: 'အမျိုးသား ပြောဆိုသူ',
+                subtitleMm: 'ရင်းနှီးသော တွန်းအားပေး စကား',
+                icon: 'fa-handshake-angle',
+                color: 'from-amber-500 to-orange-600',
+                voice: 'Puck',
+                prompt: 'Translate the Myanmar text into warm, encouraging, brotherly English as spoken by a supportive male mentor.'
+            },
+            {
+                id: 'female_support_en',
+                titleEn: 'Female Speaker',
+                subtitleEn: 'Warm Customer Support',
+                titleMm: 'အမျိုးသမီး ပြောဆိုသူ',
+                subtitleMm: 'နွေးထွေးသော ဝန်ဆောင်မှု အသုံးအနှုန်း',
+                icon: 'fa-headset',
+                color: 'from-emerald-500 to-teal-600',
+                voice: 'Zephyr',
+                prompt: 'Translate the Myanmar text into polite, patient, warm English as spoken by a female customer support manager.'
+            },
+            {
+                id: 'academic_en',
+                titleEn: 'Academic',
+                subtitleEn: 'Scholarly & Technical Paper',
+                titleMm: 'ပညာရပ်ဆိုင်ရာ',
+                subtitleMm: 'စာတမ်းနှင့် နည်းပညာ သုတေသန ပုံစံ',
+                icon: 'fa-graduation-cap',
+                color: 'from-purple-500 to-violet-600',
+                voice: 'Charon',
+                prompt: 'Translate the Myanmar text into scholarly, academic English suitable for a peer-reviewed paper or technical thesis.'
+            },
+            {
+                id: 'casual_slang_en',
+                titleEn: 'Casual Slang',
+                subtitleEn: 'Conversational Idioms',
+                titleMm: 'ပေါ့ပေါ့ပါးပါး စကားပြော',
+                subtitleMm: 'နေ့စဉ်သုံး အင်္ဂလိပ် စကားကြီးအသုံး',
+                icon: 'fa-comments',
+                color: 'from-pink-500 to-rose-600',
+                voice: 'Fenrir',
+                prompt: 'Translate the Myanmar text into relaxed everyday natural English with native idioms and informal expressions.'
+            },
+            {
+                id: 'custom',
+                titleEn: 'Custom Style',
+                subtitleEn: 'User defined tone',
+                titleMm: 'စိတ်ကြိုက် ပုံစံ',
+                subtitleMm: 'မိမိဘာသာ သတ်မှတ်ထားသော အသုံးအနှုန်း',
+                icon: 'fa-sliders',
+                color: 'from-indigo-600 to-slate-800',
+                voice: 'Zephyr',
+                prompt: 'Custom'
+            }
+        ];
+
+        // Sample Presets
+        const SAMPLES_EN = {
+            presentation: "Welcome everyone to our annual summit. Today, I am proud to present our team's strategic vision for the coming year.",
+            encouraging_brother: "Don't give up brother! You have worked so hard for this, and I fully believe in your ability to succeed.",
+            friend_informal: "Hey man, what are you up to tonight? Let's grab some tea and hang out for a bit.",
+            customer_care: "We deeply apologize for any inconvenience caused to you today. Our customer team is immediately taking care of your request.",
+            encouraging_sister: "Keep fighting sister! Take a short break, believe in yourself, and everything will turn out great."
+        };
+
+        const SAMPLES_MM = {
+            presentation: "ကျွန်တော်တို့ ကုမ္ပဏီအနေနဲ့ လာမယ့်နှစ်မှာ နည်းပညာသစ်တွေကို အသုံးပြုပြီး ရလဒ်ကောင်းတွေ ထုတ်ဖော်သွားနိုင်ဖို့ မျှော်လင့်ပါတယ်။",
+            encouraging_brother: "ညီလေး၊ မင်းအခုကြုံနေရတဲ့ အခက်အခဲက ခေတ္တခဏပါပဲကွာ။ လျှော့မပေးနဲ့၊ မင်းရဲ့ကြိုးစားမှုကို အပြည့်အဝ ယုံကြည်တယ်။",
+            customer_care: "မင်္ဂလာပါရှင့်။ လူကြီးမင်း ကြုံတွေ့နေရတဲ့ အဆင်မပြေမှုကို စိတ်မကောင်းစွာဖြင့် တောင်းပန်အပ်ပါတယ်။",
+            friend_informal: "ဟေ့ကောင်! ဒီနေ့ညနေ အပြင်ထွက်ပြီး အေးဆေး ကော်ဖီသောက်ရင်း စကားစမည် ပြောရအောင်။"
+        };
+
+        // UI DOM Elements
+        const uiLangToggleBtn = document.getElementById('uiLangToggleBtn');
+        const uiLangLabel = document.getElementById('uiLangLabel');
+        const directionToggleBtn = document.getElementById('directionToggleBtn');
+        const directionLabel = document.getElementById('directionLabel');
+        const appHeaderTitle = document.getElementById('appHeaderTitle');
+        const appHeaderSubtitle = document.getElementById('appHeaderSubtitle');
+        const personaSectionTitle = document.getElementById('personaSectionTitle');
+        const sourcePanelTitle = document.getElementById('sourcePanelTitle');
+        const targetPanelTitle = document.getElementById('targetPanelTitle');
+        const personaPresetContainer = document.getElementById('personaPresetContainer');
+        const samplePresetsContainer = document.getElementById('samplePresetsContainer');
+        const customPersonaBox = document.getElementById('customPersonaBox');
+        const customPersonaLabel = document.getElementById('customPersonaLabel');
+        const customPersonaInput = document.getElementById('customPersonaInput');
+        const selectedStyleBadge = document.getElementById('selectedStyleBadge');
+        const sourceInput = document.getElementById('sourceInput');
+        const charCount = document.getElementById('charCount');
+        const translateBtn = document.getElementById('translateBtn');
+        const translateBtnText = document.getElementById('translateBtnText');
+        const outputPlaceholder = document.getElementById('outputPlaceholder');
+        const placeholderText = document.getElementById('placeholderText');
+        const loadingState = document.getElementById('loadingState');
+        const loadingStatusText = document.getElementById('loadingStatusText');
+        const outputContainer = document.getElementById('outputContainer');
+        const translationOutput = document.getElementById('translationOutput');
+        const romanizationBox = document.getElementById('romanizationBox');
+        const romanizationText = document.getElementById('romanizationText');
+        const toneBreakdownTitle = document.getElementById('toneBreakdownTitle');
+        const toneNotesText = document.getElementById('toneNotesText');
+        const culturalNoteTitle = document.getElementById('culturalNoteTitle');
+        const culturalNotesText = document.getElementById('culturalNotesText');
+        const apiKeyBtnText = document.getElementById('apiKeyBtnText');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalKeyLabel = document.getElementById('modalKeyLabel');
+        const clearApiKeyBtn = document.getElementById('clearApiKeyBtn');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const apiKeyModal = document.getElementById('apiKeyModal');
+        const apiKeyModalBtn = document.getElementById('apiKeyModalBtn');
+        const closeApiKeyModal = document.getElementById('closeApiKeyModal');
+        const customApiKeyInput = document.getElementById('customApiKeyInput');
+        const copyBtn = document.getElementById('copyBtn');
+        const ttsBtn = document.getElementById('ttsBtn');
+        const ttsPlayerBar = document.getElementById('ttsPlayerBar');
+        const stopTtsBtn = document.getElementById('stopTtsBtn');
+        const ttsStatus = document.getElementById('ttsStatus');
+
+        let selectedPersonaId = 'male_formal_presentation';
+        let customApiKey = localStorage.getItem('bv_gemini_api_key') || '';
+        let currentAudioSource = null;
+        let audioCtx = null;
+
+        // Update All UI Text Labels based on `uiLanguage`
+        function updateUiLanguage() {
+            const strings = I18N[uiLanguage];
+            
+            appHeaderTitle.innerText = strings.appName;
+            appHeaderSubtitle.innerText = strings.appSubtitle;
+            uiLangLabel.innerText = strings.uiToggleBtn;
+            directionLabel.innerText = currentDirection === 'EN_TO_MM' ? strings.directionEnMm : strings.directionMmEn;
+            personaSectionTitle.innerText = strings.personaSectionTitle;
+            customPersonaLabel.innerHTML = `<i class="fa-solid fa-pen-nib"></i> ${strings.customPersonaLabel}`;
+            customPersonaInput.placeholder = strings.customPersonaPlaceholder;
+            
+            if (currentDirection === 'EN_TO_MM') {
+                sourcePanelTitle.innerText = strings.sourceTitleEn;
+                targetPanelTitle.innerText = strings.targetTitleMm;
+                sourceInput.placeholder = strings.inputPlaceholderEn;
+            } else {
+                sourcePanelTitle.innerText = strings.sourceTitleMm;
+                targetPanelTitle.innerText = strings.targetTitleEn;
+                sourceInput.placeholder = strings.inputPlaceholderMm;
+            }
+
+            translateBtnText.innerText = strings.translateBtn;
+            placeholderText.innerText = strings.placeholderText;
+            loadingStatusText.innerText = strings.loadingStatus;
+            toneBreakdownTitle.innerHTML = `<i class="fa-solid fa-circle-info text-indigo-500"></i> ${strings.toneBreakdownTitle}`;
+            culturalNoteTitle.innerHTML = `<i class="fa-solid fa-lightbulb"></i> ${strings.culturalNoteTitle}`;
+            apiKeyBtnText.innerText = strings.apiKeyBtn;
+            modalTitle.innerHTML = `<i class="fa-solid fa-key text-indigo-500"></i> ${strings.modalTitle}`;
+            modalDesc.innerText = strings.modalDesc;
+            modalKeyLabel.innerText = strings.modalKeyLabel;
+            clearApiKeyBtn.innerText = strings.clearKeyBtn;
+            saveApiKeyBtn.innerText = strings.saveKeyBtn;
+
+            renderPersonas();
+            renderSamples();
+        }
+
+        // Render Persona Cards
+        function renderPersonas() {
+            const list = currentDirection === 'EN_TO_MM' ? PERSONAS_EN_TO_MM : PERSONAS_MM_TO_EN;
+            
+            personaPresetContainer.innerHTML = list.map(p => {
+                const isActive = p.id === selectedPersonaId;
+                const title = uiLanguage === 'mm' ? p.titleMm : p.titleEn;
+                const subtitle = uiLanguage === 'mm' ? p.subtitleMm : p.subtitleEn;
+
+                return `
+                    <button class="persona-card p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                        isActive 
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/70 dark:bg-indigo-950/50 shadow-sm' 
+                        : 'border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 hover:border-slate-300 dark:hover:border-slate-700'
+                    }" data-id="${p.id}">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr ${p.color} text-white flex items-center justify-center text-xs shadow-sm">
+                                <i class="fa-solid ${p.icon}"></i>
+                            </div>
+                            ${isActive ? '<i class="fa-solid fa-circle-check text-indigo-600 dark:text-indigo-400 text-xs"></i>' : ''}
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 ${uiLanguage === 'mm' ? 'font-myanmar' : ''}">${title}</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1 ${uiLanguage === 'mm' ? 'font-myanmar' : ''}">${subtitle}</div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            // Card click handlers
+            document.querySelectorAll('.persona-card').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedPersonaId = btn.dataset.id;
+                    const p = list.find(x => x.id === selectedPersonaId);
+                    if (p) {
+                        const title = uiLanguage === 'mm' ? p.titleMm : p.titleEn;
+                        const subtitle = uiLanguage === 'mm' ? p.subtitleMm : p.subtitleEn;
+                        selectedStyleBadge.innerText = `${title}: ${subtitle}`;
+                    }
+                    
+                    if (selectedPersonaId === 'custom') {
+                        customPersonaBox.classList.remove('hidden');
+                    } else {
+                        customPersonaBox.classList.add('hidden');
+                    }
+                    renderPersonas();
+                });
+            });
+
+            // Update badge text for current selection
+            const activeP = list.find(x => x.id === selectedPersonaId);
+            if (activeP) {
+                const title = uiLanguage === 'mm' ? activeP.titleMm : activeP.titleEn;
+                const subtitle = uiLanguage === 'mm' ? activeP.subtitleMm : activeP.subtitleEn;
+                selectedStyleBadge.innerText = `${title}: ${subtitle}`;
+            }
+        }
+
+        // Render Sample Buttons based on translation direction and UI language
+        function renderSamples() {
+            const strings = I18N[uiLanguage];
+            if (currentDirection === 'EN_TO_MM') {
+                samplePresetsContainer.innerHTML = `
+                    <span class="text-xs text-slate-400 whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> ${strings.samplesLabel}</span>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="presentation">
+                        ${strings.samplePresentation}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="encouraging_brother">
+                        ${strings.sampleBrother}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="friend_informal">
+                        ${strings.sampleFriend}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="customer_care">
+                        ${strings.sampleCustomer}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="encouraging_sister">
+                        ${strings.sampleSister}
+                    </button>
+                `;
+            } else {
+                samplePresetsContainer.innerHTML = `
+                    <span class="text-xs text-slate-400 whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i> ${strings.samplesLabel}</span>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="presentation">
+                        ${strings.samplePresentation}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="encouraging_brother">
+                        ${strings.sampleBrother}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="customer_care">
+                        ${strings.sampleCustomer}
+                    </button>
+                    <button class="sample-btn text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition whitespace-nowrap ${uiLanguage === 'mm' ? 'font-myanmar' : ''}" data-sample="friend_informal">
+                        ${strings.sampleFriend}
+                    </button>
+                `;
+            }
+
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const sampleType = btn.dataset.sample;
+                    const samplesObj = currentDirection === 'EN_TO_MM' ? SAMPLES_EN : SAMPLES_MM;
+                    sourceInput.value = samplesObj[sampleType] || '';
+                    charCount.innerText = `${sourceInput.value.length} chars`;
+                });
+            });
+        }
+
+        // UI Language Toggle Click Event
+        uiLangToggleBtn.addEventListener('click', () => {
+            uiLanguage = uiLanguage === 'en' ? 'mm' : 'en';
+            updateUiLanguage();
+            showToast(uiLanguage === 'mm' ? 'UI ၏ ဘာသာစကားကို မြန်မာသို့ ပြောင်းလဲလိုက်ပါပြီ' : 'App UI language set to English', 'success');
+        });
+
+        // Direction Switch Event
+        directionToggleBtn.addEventListener('click', () => {
+            currentDirection = currentDirection === 'EN_TO_MM' ? 'MM_TO_EN' : 'EN_TO_MM';
+            
+            if (currentDirection === 'EN_TO_MM') {
+                selectedPersonaId = 'male_formal_presentation';
+                translationOutput.className = 'text-lg sm:text-xl text-slate-800 dark:text-slate-100 font-medium leading-relaxed font-myanmar';
+            } else {
+                selectedPersonaId = 'male_formal_en';
+                translationOutput.className = 'text-base sm:text-lg text-slate-800 dark:text-slate-100 font-medium leading-relaxed';
+            }
+
+            sourceInput.value = '';
+            charCount.innerText = '0 chars';
+            outputContainer.classList.add('hidden');
+            outputPlaceholder.classList.remove('hidden');
+
+            updateUiLanguage();
+        });
+
+        // Clear Source Input
+        document.getElementById('clearInputBtn').addEventListener('click', () => {
+            sourceInput.value = '';
+            charCount.innerText = '0 chars';
+        });
+
+        sourceInput.addEventListener('input', () => {
+            charCount.innerText = `${sourceInput.value.length} chars`;
+        });
+
+        // Theme Toggle Handler
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // API Key Modal Controls
+        apiKeyModalBtn.addEventListener('click', () => {
+            customApiKeyInput.value = customApiKey;
+            apiKeyModal.classList.remove('hidden');
+            apiKeyModal.classList.add('flex');
+        });
+        closeApiKeyModal.addEventListener('click', () => {
+            apiKeyModal.classList.add('hidden');
+            apiKeyModal.classList.remove('flex');
+        });
+        clearApiKeyBtn.addEventListener('click', () => {
+            customApiKey = '';
+            localStorage.removeItem('bv_gemini_api_key');
+            customApiKeyInput.value = '';
+            apiKeyModal.classList.add('hidden');
+            showToast('Custom API Key removed. Using default.', 'info');
+        });
+        saveApiKeyBtn.addEventListener('click', () => {
+            customApiKey = customApiKeyInput.value.trim();
+            localStorage.setItem('bv_gemini_api_key', customApiKey);
+            apiKeyModal.classList.add('hidden');
+            showToast('API Key saved successfully.', 'success');
+        });
+
+        // Copy Translation to Clipboard
+        copyBtn.addEventListener('click', () => {
+            const text = translationOutput.innerText;
+            if (!text) return;
+            
+            // iFrame safe copy snippet
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            
+            showToast('Translation copied to clipboard!', 'success');
+        });
+
+        // Main Translation Request with Gemini API
+        translateBtn.addEventListener('click', async () => {
+            const text = sourceInput.value.trim();
+            if (!text) {
+                showToast(uiLanguage === 'mm' ? 'ကျေးဇူးပြု၍ ဘာသာပြန်ရန် စာသားရိုက်ထည့်ပါ' : 'Please enter text to translate.', 'error');
+                return;
+            }
+
+            const list = currentDirection === 'EN_TO_MM' ? PERSONAS_EN_TO_MM : PERSONAS_MM_TO_EN;
+            const activePersona = list.find(p => p.id === selectedPersonaId);
+            let personaPrompt = activePersona ? activePersona.prompt : '';
+
+            if (selectedPersonaId === 'custom') {
+                const customVal = customPersonaInput.value.trim();
+                if (!customVal) {
+                    showToast(uiLanguage === 'mm' ? 'စိတ်ကြိုက် ပုံစံ ညွှန်ကြားချက် ထည့်ပါ' : 'Please enter your custom persona instructions.', 'error');
+                    return;
+                }
+                personaPrompt = `Match this custom style instruction: "${customVal}".`;
+            }
+
+            // Show Loading UI
+            outputPlaceholder.classList.add('hidden');
+            outputContainer.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+            translateBtn.disabled = true;
+
+            try {
+                let systemInstruction = "";
+                let userQuery = "";
+
+                if (currentDirection === 'EN_TO_MM') {
+                    systemInstruction = `You are a master bilingual linguistic expert specializing in English to Myanmar (Burmese) translation with deep cultural pragmatics, social hierarchy, gendered ending particles, and honorifics.
+Translate the English text into natural, culturally accurate Myanmar script strictly adhering to the requested persona. Provide structured output in JSON format.
+Notes on Myanmar ending particles:
+- Formal male: ပါခင်ဗျာ, ပါဗျာ, ခင်ဗျ
+- Formal female: ပါရှင့်, ရှင့်
+- Informal/Sisterly/Brotherly: ပါနော်, နော်, ကွာ, လေ, ဟေ့ကောင်
+- Literary: သည်, သည့်, ၍, ဖြင့်, ၏
+- Spoken written: တယ်, တဲ့, နဲ့, မယ်`;
+
+                    userQuery = `English Input: "${text}"
+Persona / Style Instruction: ${personaPrompt}
+
+Respond with a JSON object containing:
+1. "translation": The translated text in Myanmar script (Unicode).
+2. "romanization": Phonetic pronunciation guide in English letters/Romanized Burmese.
+3. "toneAnalysis": Detailed explanation of specific particles, pronouns, or honorifics chosen to fit the social hierarchy and tone. (Write in ${uiLanguage === 'mm' ? 'Myanmar language' : 'English'}).
+4. "culturalNotes": Contextual tips or cultural etiquette advice for using this translation appropriately. (Write in ${uiLanguage === 'mm' ? 'Myanmar language' : 'English'}).`;
+                } else {
+                    systemInstruction = `You are a master bilingual translator specializing in Myanmar to English translation with advanced pragmatic tone adaptation.
+Translate the Myanmar text into English strictly adhering to the specified persona. Provide structured output in JSON format.`;
+
+                    userQuery = `Myanmar Text: "${text}"
+Persona Style Instruction: ${personaPrompt}
+
+Respond with a JSON object containing:
+1. "translation": The translated English text tailored to the persona.
+2. "romanization": (Leave empty or provide key Myanmar term pronunciation).
+3. "toneAnalysis": Explanation of stylistic choices and tone adaptations. (Write in ${uiLanguage === 'mm' ? 'Myanmar language' : 'English'}).
+4. "culturalNotes": Cultural context or usage advice. (Write in ${uiLanguage === 'mm' ? 'Myanmar language' : 'English'}).`;
+                }
+
+                const apiKey = customApiKey || "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                translation: { type: "STRING" },
+                                romanization: { type: "STRING" },
+                                toneAnalysis: { type: "STRING" },
+                                culturalNotes: { type: "STRING" }
+                            },
+                            required: ["translation", "toneAnalysis", "culturalNotes"]
+                        }
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error?.message || 'API request failed');
+                }
+
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!jsonText) {
+                    throw new Error("No response content received from Gemini API.");
+                }
+
+                const parsed = JSON.parse(jsonText);
+                
+                // Render Outputs
+                translationOutput.innerText = parsed.translation;
+                
+                if (parsed.romanization && parsed.romanization.trim()) {
+                    romanizationText.innerText = `Pronunciation: ${parsed.romanization}`;
+                    romanizationBox.classList.remove('hidden');
+                } else {
+                    romanizationBox.classList.add('hidden');
+                }
+
+                toneNotesText.innerText = parsed.toneAnalysis;
+                culturalNotesText.innerText = parsed.culturalNotes;
+
+                loadingState.classList.add('hidden');
+                outputContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Translation Error:", error);
+                loadingState.classList.add('hidden');
+                outputPlaceholder.classList.remove('hidden');
+                showToast(`Translation failed: ${error.message}`, 'error');
+            } finally {
+                translateBtn.disabled = false;
+            }
+        });
+
+        // TTS Audio Generation using `gemini-2.5-flash-preview-tts`
+        ttsBtn.addEventListener('click', async () => {
+            const textToSpeech = translationOutput.innerText.trim();
+            if (!textToSpeech) return;
+
+            const list = currentDirection === 'EN_TO_MM' ? PERSONAS_EN_TO_MM : PERSONAS_MM_TO_EN;
+            const persona = list.find(p => p.id === selectedPersonaId);
+            const voiceName = persona ? persona.voice : 'Zephyr';
+
+            ttsPlayerBar.classList.remove('hidden');
+            ttsStatus.innerText = uiLanguage === 'mm' ? 'အသံဖိုင် ဖန်တီးနေသည်...' : 'Generating Audio...';
+
+            try {
+                if (currentAudioSource) {
+                    currentAudioSource.stop();
+                }
+
+                const apiKey = customApiKey || "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const promptPrefix = currentDirection === 'EN_TO_MM' 
+                    ? `Speak this Myanmar text naturally with appropriate emotion: ` 
+                    : `Speak this English text clearly: `;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: promptPrefix + textToSpeech }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName }
+                            }
+                        }
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Audio generation failed");
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const base64Audio = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || '';
+
+                if (!base64Audio) {
+                    throw new Error("No audio payload returned.");
+                }
+
+                // Extract sample rate from MIME (e.g., audio/L16;rate=24000)
+                let sampleRate = 24000;
+                const match = mimeType.match(/rate=(\d+)/);
+                if (match) {
+                    sampleRate = parseInt(match[1], 10);
+                }
+
+                // Convert base64 signed PCM16 to AudioBuffer and Play
+                playPcmAudio(base64Audio, sampleRate);
+
+            } catch (err) {
+                console.error("TTS Error:", err);
+                ttsStatus.innerText = uiLanguage === 'mm' ? 'အသံဖွင့်ရန် အဆင်မပြေပါ' : 'TTS Playback failed';
+                showToast(`TTS Error: ${err.message}`, 'error');
+            }
+        });
+
+        // Helper: Convert PCM16 Base64 into Web Audio API Buffer
+        function playPcmAudio(base64Data, sampleRate) {
+            const binary = atob(base64Data);
+            const len = binary.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            
+            const pcm16 = new Int16Array(bytes.buffer);
+            
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: sampleRate });
+            }
+
+            const buffer = audioCtx.createBuffer(1, pcm16.length, sampleRate);
+            const channelData = buffer.getChannelData(0);
+            
+            for (let i = 0; i < pcm16.length; i++) {
+                channelData[i] = pcm16[i] / 32768.0;
+            }
+
+            currentAudioSource = audioCtx.createBufferSource();
+            currentAudioSource.buffer = buffer;
+            currentAudioSource.connect(audioCtx.destination);
+            
+            ttsStatus.innerText = uiLanguage === 'mm' ? 'အသံဖွင့်နေသည်...' : 'Playing Audio...';
+            currentAudioSource.start();
+
+            currentAudioSource.onended = () => {
+                ttsPlayerBar.classList.add('hidden');
+            };
+        }
+
+        // Stop Audio Playback
+        stopTtsBtn.addEventListener('click', () => {
+            if (currentAudioSource) {
+                currentAudioSource.stop();
+            }
+            ttsPlayerBar.classList.add('hidden');
+        });
+
+        // Toast Helper Notification
+        function showToast(msg, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-800 text-white';
+            if (type === 'error') bg = 'bg-rose-600 text-white';
+            if (type === 'success') bg = 'bg-emerald-600 text-white';
+            
+            toast.className = `${bg} text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-white/10 pointer-events-auto flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 font-myanmar`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Initialize UI on Load
+        updateUiLanguage();
+    </script>
+</body>
+</html>
